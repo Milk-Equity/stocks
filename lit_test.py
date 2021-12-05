@@ -41,15 +41,67 @@ dt_obs = [d.strftime("%Y-%m-%d") for d in pd.to_datetime(df.index)]
 # define dates with missing values
 dt_breaks = [d for d in dt_all.strftime("%Y-%m-%d").tolist() if not d in dt_obs]
 
+#MACD
+df['MA60'] = df['Close'].rolling(window=60).mean()
+df['MA30'] = df['Close'].rolling(window=30).mean()
+
+
 
 fig = go.Figure()
-# add OHLC trace
+# add subplot properties when initiliazing fig variable
+fig = make_subplots(rows=4, cols=1, shared_xaxes=True,
+                    vertical_spacing=0.01,
+                    row_heights=[0.5,0.1,0.2,0.2])
+
+# Plot OHLC on 1st subplot (using the codes from before)
 fig.add_trace(go.Candlestick(x=df.index,
                              open=df['Open'],
                              high=df['High'],
                              low=df['Low'],
                              close=df['Close'],
                              showlegend=False))
+# add moving average traces
+fig.add_trace(go.Scatter(x=df.index,
+                         y=df['MA30'],
+                         line=dict(color='blue', width=2),
+                         name='MA 30'))
+fig.add_trace(go.Scatter(x=df.index,
+                         y=df['MA60'],
+                         line=dict(color='orange', width=2),
+                         name='MA 60'))
+
+
+# Plot volume trace on 2nd row
+colors = ['green' if row['Open'] - row['Close'] >= 0
+          else 'red' for index, row in df.iterrows()]
+fig.add_trace(go.Bar(x=df.index,
+                     y=df['Volume'],
+                     marker_color=colors
+                    ), row=2, col=1)
+
+
+
+# update layout by changing the plot size, hiding legends & rangeslider, and removing gaps between dates
+fig.update_layout(height=900, width=1200,
+                  showlegend=False,
+                  xaxis_rangeslider_visible=False,
+                  xaxis_rangebreaks=[dict(values=dt_breaks)])
+
+# update y-axis label
+fig.update_yaxes(title_text="Price", row=1, col=1)
+fig.update_yaxes(title_text="Volume", row=2, col=1)
+fig.update_yaxes(title_text="MACD", showgrid=False, row=3, col=1)
+fig.update_yaxes(title_text="Stoch", row=4, col=1)
+######################################################
+
+
+# add OHLC trace
+#fig.add_trace(go.Candlestick(x=df.index,
+#                             open=df['Open'],
+#                             high=df['High'],
+#                             low=df['Low'],
+#                             close=df['Close'],
+#                             showlegend=False))
 #fig.update_layout(title=ticker)
 
 #Fundamentals
