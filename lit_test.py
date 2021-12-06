@@ -8,6 +8,8 @@ import streamlit as st
 import datetime
 import yahoo_fin.stock_info as si
 import plotly.figure_factory as ff
+import plotly.express as px
+
 
 #Page Config
 st.set_page_config(
@@ -45,11 +47,13 @@ dt_breaks = [d for d in dt_all.strftime("%Y-%m-%d").tolist() if not d in dt_obs]
 df['MA60'] = df['Close'].rolling(window=60).mean()
 df['MA30'] = df['Close'].rolling(window=30).mean()
 
-
+#Daily Change
+df['Daily Change'] = df['Close'] - df['Open']
 
 # first declare an empty figure
-fig = make_subplots(rows=2,row_heights=[0.5,0.1])
-# add OHLC trace
+fig = make_subplots(rows=2, row_heights=[0.5,0.1])
+
+# add Candlestick trace
 fig.add_trace(go.Candlestick(x=df.index,
                              open=df['Open'],
                              high=df['High'],
@@ -79,7 +83,7 @@ fig.update_layout(height=900, width=1200,
                   xaxis_rangeslider_visible=False,)
                   #xaxis_rangebreaks=[dict(values=dt_breaks)])
 
-# update y-axis label
+#Update y-axis label
 fig.update_yaxes(title_text="Price", row=1, col=1)
 fig.update_yaxes(title_text="Volume", row=2, col=1)
 
@@ -88,7 +92,21 @@ fund = si.get_quote_table(ticker, dict_result=False)
 fund.columns = ['Fundamentals ', 'Data']
 fig_fund =  ff.create_table(fund)
 
+area_chart = px.line(df['Daily Change'])
 
+# Create subplots and mention plot grid size
+fig1 = make_subplots(rows=2, cols=1, shared_xaxes=True,
+               vertical_spacing=0.03, subplot_titles=('Price', 'Volume'),
+               row_width=[0.2, 0.7])
+
+# Plot OHLC on 1st row
+fig1.add_trace(px.line(dfrow=1, col=1)
+
+# Bar trace for volumes on 2nd row without legend
+fig1.add_trace(go.Bar(x=df.index, y=df['Volume'], showlegend=False), row=2, col=1)
+
+# Do not show OHLC's rangeslider plot
+fig1.update(layout_xaxis_rangeslider_visible=False)
 
 #Starting Layout
 col1, col2 = st.columns([1, 3])
@@ -100,4 +118,7 @@ with col1:
 
 with col2:
     st.subheader(ticker)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig1, use_container_width=True)
+
+with col2:
+    st.plotly_chart(area_chart)
