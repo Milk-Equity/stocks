@@ -18,17 +18,24 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 # Get Ticker
-ticker = st.sidebar.text_input('Symbol', value='AAPL', max_chars=4)
-ticker = ticker.upper()
+symbol = st.sidebar.text_input('Symbol', value='AAPL', max_chars=4)
+symbol = symbol.upper()
 # Get Date
-date = datetime.date.today()
+todays_date = datetime.date.today()
 
 # Sidebar
-d = st.sidebar.date_input("Starting Date", datetime.date(2012, 1, 6), max_value=date)
+date = st.sidebar.date_input("Starting Date", datetime.date(2012, 1, 6), max_value=todays_date)
 ytd = st.sidebar.button('YTD')
 
 # Download data from Date and Ticker
-df = yf.download(ticker, auto_adjust=True, start=d, period='1Y')
+df_temp = yf.download(symbol, auto_adjust=True)
+df_temp.reset_index(level=0, inplace=True)
+df = df_temp
+#ticker = yf.Ticker(symbol)
+
+# get stock info
+#df = ticker.history(period="1y")
+
 
 # Data Cleaning DON'T DELETE
 # removing all empty dates
@@ -49,20 +56,20 @@ df['MA30'] = df['Close'].rolling(window=30).mean()
 df['Daily Change'] = df['Close'] - df['Open']
 
 
-#Colors for chart... doesn't work
+#Colors for chart
 def colors(df):
     dc = df['Daily Change'].iloc[-1]
-    if dc < 0:
+    if dc > 0:
         return 'green'
     else:
         return 'red'
 
-
+#Main Chart
 fig = go.Figure()
-fig.add_trace(go.Scatter(x=df.index, y=df.Close, mode='lines', fill='tozeroy', line={'color': colors(df)}))
+fig.add_trace(go.Scatter(x=df.Date, y=df.Close, mode='lines', fill='tozeroy', line={'color': colors(df)}))
 
 # Fundamentals
-fund = si.get_quote_table(ticker, dict_result=False)
+fund = si.get_quote_table(symbol, dict_result=False)
 fund.columns = ['Fundamentals ', 'Data']
 fig_fund = ff.create_table(fund)
 
@@ -74,5 +81,5 @@ with col1:
     st.plotly_chart(fig_fund, use_container_width=True)
 
 with col2:
-    st.subheader(ticker)
+    st.subheader(symbol)
     st.plotly_chart(fig, use_container_width=True)
