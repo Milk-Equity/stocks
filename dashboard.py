@@ -24,7 +24,7 @@ symbol = symbol.upper()
 todays_date = datetime.date.today()
 
 # Sidebar
-date = st.sidebar.date_input("Starting Date", datetime.date(2012, 1, 6), max_value=todays_date)
+date = st.sidebar.date_input("Starting Date", datetime.date(2020, 1, 6), max_value=todays_date)
 ytd = st.sidebar.button('YTD')
 
 # Download data from Date and Ticker
@@ -72,16 +72,18 @@ fig = go.Figure()
 fig.add_trace(go.Scatter(x=df.Date, y=df.Close, mode='lines', fill='tozeroy', line={'color': colors(df)}))
 
 # Fundamentals
-fund = si.get_quote_table(symbol, dict_result=False)
-fund.columns = ['Fundamentals ', 'Data']
-fig_fund = ff.create_table(fund)
+def fundamentals(symbol):
+    fund = si.get_quote_table(symbol, dict_result=False)
+    fund.columns = ['Fundamentals ', 'Data']
+    fig_fund = ff.create_table(fund)
+    return fig_fund
 
 # Starting Layout
 col1, col2 = st.columns([1, 3])
 
 with col1:
     col1.subheader("Stock Fundamentals")
-    st.plotly_chart(fig_fund, use_container_width=True)
+    st.plotly_chart(fundamentals(symbol), use_container_width=True)
 
 with col2:
     st.subheader(symbol)

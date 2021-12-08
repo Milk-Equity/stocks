@@ -13,6 +13,7 @@ import plotly.figure_factory as ff
 #import plotly.express as px
 
 
+
 # Get Ticker
 symbol = st.sidebar.text_input('Symbol', value='MSFT', max_chars=4)
 symbol = symbol.upper()
@@ -23,17 +24,32 @@ two_yrs_ago = datetime.date.today() - relativedelta(years=2)
 three_yrs_ago = datetime.date.today() - relativedelta(years=3)
 
 # Sidebar
+
 date = st.sidebar.date_input("Starting Date", datetime.date(2019,1,5), max_value=todays_date)
+ytd = st.sidebar.button('YTD')
+
+
+
+# todo date picker doesn't work
+
+
+
+
 
 @st.cache
 def get_data(symbol):
     df = yf.download(symbol, auto_adjust=True)
     df['Daily Change'] = df['Close'] - df['Open']
     return df
-
-
 df = get_data(symbol)
-df = df.loc[three_yrs_ago:todays_date]
+
+
+if st.sidebar.button('1 Year'):
+    df = df.loc[yr_ago:todays_date]
+if st.sidebar.button('2 Years'):
+    df = df.loc[two_yrs_ago:todays_date]
+
+#df = df.loc[three_yrs_ago:todays_date]
 
 
 
