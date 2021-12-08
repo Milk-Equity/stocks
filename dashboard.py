@@ -28,13 +28,16 @@ date = st.sidebar.date_input("Starting Date", datetime.date(2012, 1, 6), max_val
 ytd = st.sidebar.button('YTD')
 
 # Download data from Date and Ticker
-df_temp = yf.download(symbol, auto_adjust=True)
-df_temp.reset_index(level=0, inplace=True)
-df = df_temp
-#ticker = yf.Ticker(symbol)
 
-# get stock info
-#df = ticker.history(period="1y")
+@st.cache
+def get_data(symbol):
+    df = yf.download(symbol, auto_adjust=True)
+    return df
+
+df = get_data(symbol).loc[date:todays_date]
+
+df.reset_index(level=0, inplace=True)
+
 
 
 # Data Cleaning DON'T DELETE

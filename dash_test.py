@@ -1,14 +1,16 @@
 import pandas as pd
 import yfinance as yf
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from ta.trend import MACD
-from ta.momentum import StochasticOscillator  # MACD
+#from plotly.subplots import make_subplots
+#from ta.trend import MACD
+#from ta.momentum import StochasticOscillator  # MACD
 import streamlit as st
 import datetime
+from dateutil.relativedelta import relativedelta
+
 import yahoo_fin.stock_info as si
 import plotly.figure_factory as ff
-import plotly.express as px
+#import plotly.express as px
 
 
 # Get Ticker
@@ -16,16 +18,22 @@ symbol = st.sidebar.text_input('Symbol', value='MSFT', max_chars=4)
 symbol = symbol.upper()
 # Get Date
 todays_date = datetime.date.today()
+yr_ago = datetime.date.today() - relativedelta(years=1)
+two_yrs_ago = datetime.date.today() - relativedelta(years=2)
+three_yrs_ago = datetime.date.today() - relativedelta(years=3)
 
 # Sidebar
-date = st.sidebar.date_input("Starting Date", datetime.date(2019, 1, 6), max_value=todays_date)
+date = st.sidebar.date_input("Starting Date", datetime.date(2019,1,5), max_value=todays_date)
+
 @st.cache
 def get_data(symbol):
     df = yf.download(symbol, auto_adjust=True)
+    df['Daily Change'] = df['Close'] - df['Open']
     return df
-#df = yf.download(symbol, auto_adjust=True)
 
-df = get_data(symbol).loc[date:todays_date]
+
+df = get_data(symbol)
+df = df.loc[three_yrs_ago:todays_date]
 
 
 
@@ -40,7 +48,7 @@ dt_obs = [d.strftime("%Y-%m-%d") for d in pd.to_datetime(df.index)]
 dt_breaks = [d for d in dt_all.strftime("%Y-%m-%d").tolist() if not d in dt_obs]
 
 
-df['Daily Change'] = df['Close'] - df['Open']
+
 
 
 #Colors for chart
@@ -63,3 +71,5 @@ fig_fund = ff.create_table(fund)
 
 # Starting Layout
 st.plotly_chart(fig, use_container_width=True)
+st.write(three_yrs_ago)
+st.write(three_yrs_ago.strftime('%Y/%M/%D'))
