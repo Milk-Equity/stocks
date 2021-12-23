@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6654badf-f2ff-4a86-93ba-8d80e1c09671" name="Changes" comment="t">
-      <change afterPath="$PROJECT_DIR$/dash_t2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/area chart.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/area chart.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dash_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/dash_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/dashboard.py" afterDir="false" />
-    </list>
+    <list default="true" id="6654badf-f2ff-4a86-93ba-8d80e1c09671" name="Changes" comment="t" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
