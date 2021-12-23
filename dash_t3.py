@@ -49,11 +49,19 @@ def colors(df):
     else:
         return 'red'
 
+@st.cache
+def fundamentals(symbol):
+    fund = si.get_quote_table(symbol, dict_result=False)
+    fund.columns = ['Fundamentals ', 'Data']
+    fig_fund = ff.create_table(fund)
+    return fig_fund
+
 # Starting Layout
 col1, col2 = st.columns([1,4])
 
 with col1:
     col1.subheader("Stock Fundamentals")
+    st.plotly_chart(fundamentals(symbol), use_container_width=True)
 
 with col2:
     st.subheader(symbol)
@@ -82,4 +90,4 @@ with col2:
     # Main Chart
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=df.index, y=df.Close, mode='lines', fill='tozeroy', line={'color': colors(df)}))
-    st.plotly_chart(fig, use_container_width=False)
+    st.plotly_chart(fig, use_container_width=True)
